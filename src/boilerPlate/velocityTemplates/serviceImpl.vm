@@ -1,0 +1,120 @@
+package ${packageName}.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ${packageName}.dto.*;
+import ${packageName}.entity.${NAME};
+import ${packageName}.repository.${NAME}Repository;
+/* KAFKA KULLANILMICAKSA SILINMESI LAZIM
+Hata alınıyorsa asyncall altında aynı isimde klasor olusturup
+import tr.com.hvl.hmb.kpys.sample.asyncall.${loweCaseName}.domainevent.${NAME}Event;
+import tr.com.hvl.hmb.kpys.sample.asyncall.${loweCaseName}.producer.${NAME}ReferansEventProducer;
+import tr.com.hvl.hmb.kpys.sample.asyncall.${loweCaseName}.EventType;
+*/
+import tr.com.hvl.hmb.kpys.sample.core.DomainNotFoundException;
+//import ${packageName}.entity.${NAME}_;
+import ${packageName}.mapper.*;
+import tr.gov.tubitak.bilgem.yte.infra.data.jpa.PageRequestDTO;
+import tr.gov.tubitak.bilgem.yte.infra.data.jpa.SpecificationMapper;
+import tr.gov.tubitak.bilgem.yte.infra.ytemessagecontext.message.messagecontext.MessageContextHolder;
+
+import java.util.List;
+import java.util.Optional;
+
+import static tr.com.hvl.hmb.kpys.sample.utility.GeneralMessages.GlobalMessages;
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class ${NAME}ServiceImpl implements ${NAME}Service {
+
+    private final ${NAME}Repository ${loweCaseName}Repository;
+    private final MessageContextHolder messageContextHolder;
+    //KAFKA
+    //private final ${NAME}ReferansEventProducer ${loweCaseName}ReferansEventProducer;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<${NAME}CreateDTO> query(PageRequestDTO pageRequestDTO) {
+        final Specification<${NAME}> specification = SpecificationMapper.SpecificationBuilder.newBuilder()
+        .forCriteriaDTO(pageRequestDTO)
+        //.with("ad", Ulke_.ad)	 ORNEK KULLANIM
+        .build();
+
+        PageRequest pageRequest = PageRequestDTO.PageRequestBuilder.of(pageRequestDTO).build();
+        Page<${NAME}> ${loweCaseName}Page = ${loweCaseName}Repository.findAll(specification,
+        pageRequest.withSort(Sort.Direction.DESC, "createdDate"));
+        return ${loweCaseName}Page.map(${NAME}CreateMapper.INSTANCE::entityToDto);
+    }
+
+    @Override
+    public List<${NAME}> findAll${NAME}() {
+        return ${loweCaseName}Repository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ${NAME}CreateDTO get(Long id) {
+        Optional<${NAME}> ${loweCaseName} = ${loweCaseName}Repository.findById(id);
+        return ${loweCaseName}.map(${NAME}CreateMapper.INSTANCE::entityToDto).orElse(null);
+    }
+
+    @Override
+    public ${NAME}CreateDTO create(${NAME}CreateDTO request) {
+        ${NAME} ${loweCaseName} = ${NAME}CreateMapper.INSTANCE.dtoToEntity(request);
+
+        /*
+        Set ıslemleri için ayrildi
+        */
+
+        return ${NAME}CreateMapper.INSTANCE.entityToDto(${loweCaseName});
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = DomainNotFoundException.class)
+    public ${NAME}UpdateDTO update(Long id, ${NAME}UpdateDTO request) throws DomainNotFoundException {
+        Optional<${NAME}> optional${NAME} = ${loweCaseName}Repository.findById(id);
+        if (optional${NAME}.isPresent()) {
+            ${NAME} ${loweCaseName} = optional${NAME}.get();
+            //ulke.setKod(request.getKod());
+            ${loweCaseName} = ${loweCaseName}Repository.save(${loweCaseName});
+            return ${NAME}UpdateMapper.INSTANCE.entityToDto(${loweCaseName});
+        } else {
+            messageContextHolder.addErrorMessage(GlobalMessages.RECORD_NOT_FOUND.name());
+            throw new DomainNotFoundException(GlobalMessages.RECORD_NOT_FOUND.name());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = DomainNotFoundException.class)
+    public void delete(Long id) throws DomainNotFoundException {
+        Optional<${NAME}> optional${NAME} = ${loweCaseName}Repository.findById(id);
+        if (optional${NAME}.isPresent()) {
+            ${loweCaseName}Repository.deleteById(id);
+        } else {
+            messageContextHolder.addErrorMessage(GlobalMessages.RECORD_NOT_FOUND.name());
+            throw new DomainNotFoundException(GlobalMessages.RECORD_NOT_FOUND.name());
+        }
+    }
+
+    @Override
+    public void deleteAll(List<Long> ids) throws DomainNotFoundException {
+        ${loweCaseName}Repository.deleteAllById(ids);
+        }
+
+        @Override
+        public List<${NAME}CreateDTO> findAll() {
+            return ${loweCaseName}Repository.findAll().stream().map(${NAME}CreateMapper.INSTANCE::entityToDto).toList();
+        }
+}

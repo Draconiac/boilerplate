@@ -1,0 +1,45 @@
+package $packageName;
+
+#if($typeImportBigDecimal)
+$typeImportBigDecimal
+#end
+#if($typeImportDate)
+$typeImportDate
+#end
+#if($nullableImport)
+$nullableImport
+#end
+#if($sizeImport)
+$sizeImport
+#end
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+import tr.gov.tubitak.bilgem.yte.infra.data.jpa.entity.AuditableEntity;
+
+@Getter
+@Setter
+@ApiModel(value = "", description = "")
+public class ${className}DTO extends AuditableEntity{
+#set ($nullable ="")
+#set ($length = "")
+#foreach( $column in $columnList)
+#**##if($column.nullable)
+#*  *##set ($nullable = "@NotNull(message = """+${column.columnName}+"  bos olamaz"" )" )
+#**##end
+#**##if($column.length)
+#*  *##set ($length = "@Size(max = "+$column.length+")")
+#**##end
+
+    $nullable
+    $length
+    @ApiModelProperty(value = "$column.columnName", name = "$column.columnName", dataType = "$column.variableType")
+    private $column.variableType $column.columnName;
+
+#end
+}
+
+
+

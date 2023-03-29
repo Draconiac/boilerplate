@@ -1,0 +1,32 @@
+package ${packageName}.report;
+
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.stereotype.Component;
+import ${packageName}.entity.${NAME};
+import ${packageName}.service.${NAME}Service;
+import tr.com.hvl.hmb.kpys.sample.utility.GeneralEnums;
+
+import java.util.List;
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+@Component
+@RequiredArgsConstructor
+public class ${NAME}Report{
+
+    private final ${NAME}Service ${loweCaseName}Service;
+
+    @SneakyThrows
+    public byte[] getReport(GeneralEnums.ReportType reportType) {
+        List<${NAME}> ${loweCaseName}List = ${loweCaseName}Service.findAll${NAME}();
+        if (reportType == GeneralEnums.ReportType.PDF) {
+            return new ${NAME}PdfReport(${loweCaseName}List).generatePdf();
+        } else {
+            return new ${NAME}ExcelReport("${NAME}ListReport", "Sheet", ${loweCaseName}List).generateExcel();
+        }
+    }
+}

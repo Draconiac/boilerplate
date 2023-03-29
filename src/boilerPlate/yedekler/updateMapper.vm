@@ -1,0 +1,24 @@
+package ${packageName}.mapper;
+
+import org.mapstruct.Mapper;
+import ${packageName}.dto.${NAME}UpdateDTO;
+import ${packageName}.entity.${NAME};
+import tr.com.hvl.hmb.kpys.sample.core.CommonMapper;
+
+import static org.mapstruct.factory.Mappers.getMapper;
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+@Mapper
+public interface ${NAME}UpdateMapper extends CommonMapper<${NAME}, ${NAME}UpdateMapper> {
+
+    ${NAME}UpdateMapper INSTANCE = getMapper(${NAME}UpdateMapper.class);
+
+    ${NAME}UpdateDTO entityToDto(${NAME} ${loweCaseName});
+
+    ${NAME} dtoToEntity(${NAME}UpdateDTO ${loweCaseName}updateDTO);
+
+}

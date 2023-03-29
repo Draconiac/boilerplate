@@ -1,0 +1,33 @@
+package ${packageName}.service;
+
+import org.springframework.data.domain.Page;
+import ${packageName}.dto.*;
+import ${packageName}.entity.${NAME};
+import tr.com.hvl.hmb.kpys.sample.core.DomainNotFoundException;
+import tr.gov.tubitak.bilgem.yte.infra.data.jpa.PageRequestDTO;
+
+import java.util.List;
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+public interface ${NAME}Service {
+
+    Page<${NAME}CreateDTO> query(PageRequestDTO pageRequestDTO);
+
+    List<${NAME}> findAll${NAME}();
+
+    ${NAME}CreateDTO get(Long id);
+
+    ${NAME}CreateDTO create(${NAME}CreateDTO request);
+
+    ${NAME}UpdateDTO update(Long id, ${NAME}UpdateDTO request) throws DomainNotFoundException;
+
+    void delete(Long id) throws DomainNotFoundException;
+
+    void deleteAll(List<Long> ids) throws DomainNotFoundException;
+
+    List<${NAME}CreateDTO> findAll();
+}

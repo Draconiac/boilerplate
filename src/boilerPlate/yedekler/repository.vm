@@ -1,0 +1,14 @@
+package ${packageName}.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import ${packageName}.entity.${NAME};
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+public interface ${NAME}Repository extends JpaRepository<${NAME}, Long>, JpaSpecificationExecutor<${NAME}> {
+
+}

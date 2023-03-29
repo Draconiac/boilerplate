@@ -1,0 +1,44 @@
+package $packageName;
+
+#if($typeImportBigDecimal)
+$typeImportBigDecimal
+#end
+#if($typeImportDate)
+$typeImportDate
+#end
+
+import lombok.Getter;
+import lombok.Setter;
+import tr.gov.tubitak.bilgem.yte.infra.data.jpa.entity.AuditableEntity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+@Entity
+@Getter
+@Setter
+@Table(name = "$camelCaseName")
+public class ${className} extends AuditableEntity{
+#set ($nullable ="")
+#set ($length = "")
+#foreach( $column in $columnList)
+#**##if($column.nullable)
+#*  *##set ($nullable = ",nullable = "+$column.nullable)
+#**##end
+#**##if($column.length)
+#*  *##set ($length = ",length = "+$column.length)
+#**##end
+    @Column(name = "$column.columnName" ${length} ${nullable})
+    private $column.variableType $column.columnName;
+
+#end
+}
+
+
+

@@ -1,0 +1,98 @@
+package ${packageName}.controller;
+
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import ${packageName}.dto.*;
+import ${packageName}.report.${NAME}Report;
+import ${packageName}.service.${NAME}Service;
+import tr.com.hvl.hmb.kpys.sample.core.DomainNotFoundException;
+import tr.gov.tubitak.bilgem.yte.infra.data.jpa.PageRequestDTO;
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(path = "/${loweCaseName}")
+public class ${NAME}Controller {
+
+    private final ${NAME}Service ${loweCaseName}Service;
+    private final ${NAME}Report ${loweCaseName}Report;
+
+    @ApiOperation(value = "${NAME} Getir")
+    @GetMapping
+    @PreAuthorize("hasRole('')")
+    public ${NAME}CreateDTO get(@RequestParam("id") Long id) {
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+        return ${loweCaseName}Service.get(id);
+    }
+
+    @ApiOperation(value = "${NAME} Olustur")
+    @PostMapping
+    @PreAuthorize("hasRole('')")
+    public ${NAME}CreateDTO create(@RequestBody ${NAME}CreateDTO request) {
+        return ${loweCaseName}Service.create(request);
+    }
+
+    @ApiOperation(value = "${NAME} Guncelle")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('')")
+    public ${NAME}UpdateDTO update(@PathVariable(value = "id") Long id, @RequestBody ${NAME}UpdateDTO request) throws DomainNotFoundException {
+        return ${loweCaseName}Service.update(id, request);
+    }
+
+    @ApiOperation(value = "${NAME} Sil")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('')")
+    public void delete(@PathVariable("id") Long id) throws DomainNotFoundException {
+        ${loweCaseName}Service.delete(id);
+    }
+
+    @ApiOperation(value = "${NAME} Sil Cogul")
+    @PostMapping("/deleteAll")
+    @PreAuthorize("hasRole('')")
+    public void deleteAll(@RequestBody List<Long> request) throws DomainNotFoundException {
+        ${loweCaseName}Service.deleteAll(request);
+    }
+
+    @ApiOperation(value = "${NAME} Sayfalarini Getir.")
+    @PreAuthorize("hasRole('')")
+    @PostMapping("/query")
+    public Page<${NAME}CreateDTO> query(@RequestBody PageRequestDTO pageRequestDTO) {
+        return ${loweCaseName}Service.query(pageRequestDTO);
+    }
+
+    @ApiOperation(value = "${NAME} Sayfalarini Getir.")
+    @PreAuthorize("hasRole('')")
+    @GetMapping("/all")
+    public ResponseEntity<List<${NAME}CreateDTO>> all() {
+        return ResponseEntity.ok(${loweCaseName}Service.findAll());
+    }
+
+    @ApiOperation(value = "${NAME} Bilgilerini PDF olarak sunar.")
+    @PreAuthorize("hasRole('')")
+    @PostMapping("/report")
+    @SneakyThrows
+    public byte[] getReport(@RequestBody ReportDTO reportDTO) {
+        return ${loweCaseName}Report.getReport(reportDTO.getReportType());
+    }
+}

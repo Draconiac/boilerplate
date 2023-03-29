@@ -1,0 +1,29 @@
+package ${packageName}.report;
+
+import ${packageName}.entity.${NAME};
+import tr.gov.tubitak.bilgem.yte.infra.yteexcel.AbstractExcelReport;
+import tr.gov.tubitak.bilgem.yte.infra.yteexcel.predefined.ExcelColumnList;
+import java.util.List;
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+public class ${NAME}ExcelReport extends AbstractExcelReport<${NAME}> {
+
+    public ${NAME}ExcelReport(String reportName, String sheetName, List<${NAME}> dataList) {
+        super(reportName, sheetName, dataList);
+    }
+
+    @Override
+    public ExcelColumnList createColumnDefinitions() {
+
+    ExcelColumnList columnList = new ExcelColumnList();
+    /*
+    columnList.addColumn("ad")
+    */
+    return columnList;
+}
+
+}
