@@ -1,0 +1,27 @@
+package ${packageName}.domainevent;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import tr.com.hvl.hmb.kpys.sample.asyncall.util.EventType;
+import tr.gov.tubitak.bilgem.yte.infra.ytekafkaproducer.service.event.DomainEvent;
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class ${NAME}Event implements DomainEvent {
+
+    private EventType eventType;
+
+    private Long id;
+
+    private String aciklama;
+
+    private Integer kod;
+
+}

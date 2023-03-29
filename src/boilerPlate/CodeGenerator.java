@@ -1,19 +1,14 @@
 package tr.com.hvl.hmb.kpys.sample.core.boilerPlate;
 
-import liquibase.pro.packaged.S;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.Date;
+import java.util.*;
 
 public class CodeGenerator {
 
@@ -21,13 +16,15 @@ public class CodeGenerator {
     private static String klasorDizini = "";
     private static String veriTabaniTabloAdi = "";
     private static final String velocityTemplatesPath = "core\\boilerPlate\\velocityTemplates";
-    private static final String xmlTemplatesPath = "core\\boilerPlate\\xmlTemplates";
+    private static final String xmlTemplatesPath =      "core\\boilerPlate\\xmlTemplates";
+    private static final String kafkaTemplatesPath =    "core\\boilerPlate\\kafkaTemplates";
     private static String className = "";
 
     public static void main(String[] args) {
 
         Dosya dosya = new Dosya();
         List<Dosya> dosyalar = dosya.getDosyalar();
+        List<Dosya> kafKaDosyalar = dosya.getKafkaDosyalar();
 
         //Bu değişken "_" kullanılabilir. düzeltmesi kod içinde mevcut
         veriTabaniTabloAdi = "test";
@@ -35,8 +32,10 @@ public class CodeGenerator {
 
         //Dosyalar hangi dizine kayıt edilecek ? MAX depth = 2
         klasorDizini = "aaaa\\bbb\\dd";
+
         createMainFolderForBoilerTamplate();
         generateLiquibaseXml();
+        updateLiquibaseDbChangeLog();
 
         dosyalar.forEach( d -> {
             if(d.getKlasorAdi().equals("entity") || d.getKlasorAdi().equals("dto")){
@@ -45,6 +44,11 @@ public class CodeGenerator {
                 prepareVelocity(d); // DB bağlantısı olmadan yaratılackalar için
             }
         });
+
+        kafKaDosyalar.forEach( d -> {
+            prepareVelocityForKafka(d);
+        });
+
     }
 
     /**
@@ -134,6 +138,22 @@ public class CodeGenerator {
         }
     }
 
+    private static void prepareVelocityForKafka(Dosya dosya){
+
+        VelocityContext context = new VelocityContext();
+        context.put("NAME", className);
+        context.put("loweCaseName", camelCase(className));
+        context.put("packageName", PACKAGE_NAME+".asyncall."+camelCase(className));
+        context.put("user", System.getProperty("user.name"));
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        context.put("dateTime", formatter.format(date));
+
+        fileGenerator(
+                startVelocityEngine(dosya.getDosyaAdi(), context,kafkaTemplatesPath),
+                pathHandlerForKafka(dosya));
+    }
+
     private static void prepareVelocity(Dosya dosya){
 
         VelocityContext context = new VelocityContext();
@@ -195,6 +215,7 @@ public class CodeGenerator {
         //Velocity Dosya templatinin yükleneceği yer
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path",getWorkingPath(path));
+        System.out.println(getWorkingPath(path));
         return p;
     }
 
@@ -217,8 +238,17 @@ public class CodeGenerator {
 
     private static String[] pathHandlerForXml(){
 
-        String changelogPath = System.getProperty("user.dir")+"\\src\\main\\resources\\db.changelog\\changes";
-        return new String[]{changelogPath, "TemplateX-"+className+".xml"};
+        String changelogPath = System.getProperty("user.dir")+"\\src\\main\\resources\\db\\changelog\\changes";
+        return new String[]{changelogPath, "Template-"+className+".xml"};
+    }
+
+    private static String[] pathHandlerForKafka(Dosya dosya){
+
+        String workingPath = getWorkingPath("asyncall\\"+ camelCase(className) + "\\" +  dosya.getKlasorAdi());
+        String dosyaAdi = capitalFirstLetter(dosya.getDosyaAdi());
+        String generatedFileName = className + dosyaAdi +".java";
+
+        return new String[]{workingPath, generatedFileName};
     }
 
     private static void fileGenerator(String content, String[] args){
@@ -275,15 +305,11 @@ public class CodeGenerator {
 
         //Velocity engine i baslat
         VelocityEngine ve = new VelocityEngine();
-        ve.init();
+        ve.init(getVelocityTemplatePathProperties(path));
 
-        //Initialize velocity run time engine through method  init()
-        Velocity.init(getVelocityTemplatePathProperties(path));
-        Template t = Velocity.getTemplate(velocityFileName+".vm");
+        Template t = ve.getTemplate(velocityFileName + ".vm");
 
         StringWriter writer = new StringWriter();
-        //merge() is a  method of the Template class.
-        //The usage of merge() is  for merging  the VelocityContext class object to produce the output.
         t.merge(context, writer);
 
         return writer.toString();
@@ -305,5 +331,27 @@ public class CodeGenerator {
 
     private static void updateLiquibaseDbChangeLog(){
 
+        String searchString = "</databaseChangeLog>";
+        String newLine = "    " + "<include file=\"db/changelog/changes/Template-"+className+".xml\"/>";
+
+        try {
+            File file = new File(System.getProperty("user.dir")+"\\src\\main\\resources\\db\\changelog\\changes\\db.changelog-0.0.1.xml");
+            RandomAccessFile raf = new RandomAccessFile(file, "rw");
+
+            String line;
+            while (raf.getFilePointer() < raf.length()){
+
+                line = raf.readLine();
+                if(line.trim().equals(searchString)){
+                    raf.seek(raf.getFilePointer() - line.length());
+                    raf.writeBytes(newLine + System.lineSeparator() + line);
+                }
+            }
+
+            raf.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,0 +1,32 @@
+package ${packageName}.consumer;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import ${packageName}.domainevent.${NAME}Event;
+import tr.gov.tubitak.bilgem.yte.infra.ytekafkaconsumer.consumer.MessageProcessor;
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+@Component
+@RequiredArgsConstructor
+public class ${NAME}EventProcessor implements MessageProcessor<${NAME}Event> {
+
+    @Override
+    public void processMessage(${NAME}Event ${loweCaseName}Event) {
+
+    System.out.println("${NAME} Event Consume Edildi");
+    System.out.println(${loweCaseName}Event.getEventType().name() + ${loweCaseName}Event.getAciklama());
+
+    /*Try Catch Exception yakalanir yeni bir Transaction acilarak ıslem yapilir*/
+    //try {
+    //
+    //}catch (RuntimeException ex){
+    //    handleMessageService.handleSkippingMessage(kamuIdaresiEvent.getKamuIdaresiIntegrationDTO().getEkleKamuIdaresiDTO().getId(), consumerFactory);
+    //    throw new MessageConsumedWithErrorException("SkipMessage",ex);
+    //
+    //}
+    }
+}

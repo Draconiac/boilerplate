@@ -10,6 +10,7 @@ public class Dosya {
     private boolean namingException;
 
     private List<Dosya> dosyalar;
+    private List<Dosya> kafkaDosyalar;
 
     public Dosya(String klasorAdi, String dosyaAdi) {
         this.klasorAdi = klasorAdi;
@@ -55,5 +56,15 @@ public class Dosya {
         dosyalar.add(new Dosya("service","serviceImpl"));
         return dosyalar;
     }
+
+    public List<Dosya> getKafkaDosyalar() {
+        kafkaDosyalar = new ArrayList<>();
+        kafkaDosyalar.add(new Dosya("consumer","eventProcessor"));
+        kafkaDosyalar.add(new Dosya("domainevent","event"));
+        kafkaDosyalar.add(new Dosya("producer","referansEventProducer"));
+        kafkaDosyalar.add(new Dosya("producer","referansEventProducerImpl"));
+        return kafkaDosyalar;
+    }
+
 }
 

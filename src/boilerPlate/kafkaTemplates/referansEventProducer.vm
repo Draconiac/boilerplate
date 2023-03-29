@@ -1,0 +1,14 @@
+package ${packageName}.producer;
+
+import ${packageName}.domainevent.${NAME}Event;
+
+/**
+@autor ${user}.
+Created Date: ${dateTime}
+*/
+
+public interface ${NAME}ReferansEventProducer {
+
+    void publish(${NAME}Event ${loweCaseName}Event);
+
+}
